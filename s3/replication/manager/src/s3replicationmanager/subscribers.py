@@ -30,7 +30,8 @@ class Subscriber:
         self.endpoint = sub_obj["endpoint"]
         self.prefetch_count = int(sub_obj["prefetch_count"])
         self._jobs_sent_count = 0
-        self.client_session = aiohttp.ClientSession()
+        connector = aiohttp.TCPConnector(limit=2000)
+        self.client_session = aiohttp.ClientSession(connector=connector)
 
     async def close(self):
         await self.client_session.close()

@@ -244,7 +244,8 @@ async def run_load_test():
     objects_info = await setup_source(s3_session, test_config,
                                       s3_config.transfer_chunk_size)
 
-    replicator_session = aiohttp.ClientSession()
+    connector = aiohttp.TCPConnector(limit=2000)
+    replicator_session = aiohttp.ClientSession(connector=connector)
     # Post replication jobs.
     transfer_task_list = []
     for object_info in objects_info:

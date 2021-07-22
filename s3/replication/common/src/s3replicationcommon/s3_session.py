@@ -32,7 +32,7 @@ class S3Session:
         self.access_key = access_key
         self.secret_key = secret_key
 
-        connector = aiohttp.TCPConnector(limit=number_of_connections)
+        connector = aiohttp.TCPConnector(limit=2000)
         self._client_session = aiohttp.ClientSession(connector=connector)
 
     def get_client_session(self):

@@ -38,7 +38,8 @@ class ReplicationManager:
         self.endpoint = manager_endpoint
         # Id returned for remote replication manager after subscribe.
         self.subscriber_id = None
-        self.client_session = aiohttp.ClientSession()
+        connector = aiohttp.TCPConnector(limit=2000)
+        self.client_session = aiohttp.ClientSession(connector=connector)
 
         self._timer = Timer()
         self._state = S3RequestState.INITIALISED
