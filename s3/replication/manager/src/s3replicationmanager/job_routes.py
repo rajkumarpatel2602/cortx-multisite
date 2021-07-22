@@ -120,7 +120,34 @@ async def get_jobs(request):
 
     all_jobs_list = request.app['all_jobs']
 
-    if 'queued' in query:
+    if 'count' in query:
+        if 'queued' in query['count']:
+            queued_jobs = all_jobs_list.get_queued()
+            #_logger.debug('########## QUEUED')
+            return web.json_response(
+                {'count': all_jobs_list.queued_count()}, status=200)
+            #return web.json_response(
+            #    {'count': len(queued_jobs)}, status=200)
+        elif 'inprogress' in query['count']:
+            inprogress_jobs = all_jobs_list.get_inprogress()
+            #_logger.debug('########## INPROGRESS : {}'.format(inprogress_jobs))
+            return web.json_response(
+                {'count': all_jobs_list.inprogress_count()}, status=200)
+            #return web.json_response(
+            #    {'count': len(inprogress_jobs)}, status=200)
+        elif 'completed' in query['count']:
+            completed_jobs = all_jobs_list.get_completed()
+            #_logger.debug('########## COMPLETED : {}'.format(completed_jobs))
+            return web.json_response(
+                {'count': all_jobs_list.completed_count()}, status=200)
+            #return web.json_response(
+            #    {'count': len(completed_jobs)}, status=200)
+        else:
+            _logger.debug('########## COUNT')
+            return web.json_response(
+                {'count': all_jobs_list.count()}, status=200)
+
+    elif 'queued' in query:
         # Return queued jobs not yet distributed.
         queued_jobs = all_jobs_list.get_queued()
         _logger.debug('Returning Jobs Queued, count = {}'.format(
@@ -128,7 +155,7 @@ async def get_jobs(request):
         return web.json_response(
             queued_jobs, dumps=Jobs.list_dumps, status=200)
 
-    if 'inprogress' in query:
+    elif 'inprogress' in query:
         # Return in progress jobs that are distributed.
         inprogress_jobs_list = all_jobs_list.get_inprogress()
 
@@ -145,17 +172,12 @@ async def get_jobs(request):
         return web.json_response(
             completed_jobs, dumps=Jobs.list_dumps, status=200)
 
-    elif 'count' in query:
-        # Return total jobs count.
-        _logger.debug('Returning all jobs count = {}'.format(
-            all_jobs_list.count()))
-        return web.json_response(
-            {'count': all_jobs_list.count()}, status=200)
-
     else:
         # return jobs that are not yet distributed.
         _logger.debug('Returning All Jobs, count = {}'.format(
             all_jobs_list.count()))
+        _logger.debug('Returning All Jobs = {}'.format(
+            all_jobs_list.get_inprogress()))
         return web.json_response(
             all_jobs_list, dumps=Jobs.dumps, status=200)
 
